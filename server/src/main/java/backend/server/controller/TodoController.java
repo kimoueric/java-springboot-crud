@@ -2,6 +2,9 @@ package backend.server.controller;
 
 import backend.server.entite.Todo;
 import backend.server.service.TodoService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -15,7 +18,7 @@ public class TodoController {
     }
 
     @GetMapping("todos")
-    @CrossOrigin(origins = "localhost:5173/" ,methods = RequestMethod.GET)
+    @CrossOrigin(origins = "http://localhost:5173" ,methods = RequestMethod.GET)
     public Map<String , Object> getTodos(){
         Iterable<Todo> todos = this.todoService.getTodos();
 
@@ -30,16 +33,20 @@ public class TodoController {
     }
 
     @PostMapping("todo")
-    @CrossOrigin(origins = "localhost:5173/" ,methods = RequestMethod.POST)
-    public Map<String,String> saveTodo(@RequestBody Todo todo){
+    @CrossOrigin(origins = "http://localhost:5173" ,methods = RequestMethod.POST)
+
+    public ResponseEntity saveTodo(@RequestBody Todo todo){
+
         if(this.todoService.saveTodo(todo)){
-            return Map.of("message" , "Enregistre avec succes");
+            return ResponseEntity.ok(Map.of("message", "Enregistre avec succes"));
         }
-        return null;
+        else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Échec de l'enregistrement"));
+        }
     }
 
     @DeleteMapping("todo/{id}")
-    @CrossOrigin(origins = "localhost:5173/" ,methods = RequestMethod.DELETE)
+    @CrossOrigin(origins = "http://localhost:5173" ,methods = RequestMethod.DELETE)
     public Map<String,String> deleteTodo(@PathVariable int id){
         if(this.todoService.deleteTodo(id)){
             return Map.of("message" , "Supprime avec succes");
